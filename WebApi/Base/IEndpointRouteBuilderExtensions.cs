@@ -39,7 +39,7 @@ public static class IEndpointRouteBuilderExtensions
     }
 
     public static IEndpointRouteBuilder MapDelete(this IEndpointRouteBuilder builder, Delegate handler,
-        [StringSyntax("Route")] string pattern)
+        [StringSyntax("Route")] string pattern="")
     {
         Guard.Against.AnonymousMethod(handler);
 

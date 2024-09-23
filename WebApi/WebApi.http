@@ -13,3 +13,7 @@ GET {{WebApi_HostAddress}}/api/TodoLists
 
 ###
 GET {{WebApi_HostAddress_Prod}}/api/Credential
+
+###
+GET {{WebApi_HostAddress_Prod}}/api/Credential/43053e88-ad18-4127-0328-08dcdbcb7485
+

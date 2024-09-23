@@ -10,10 +10,11 @@ public class Credential : EndpointGroupBase
     {
         app.MapGroup(this)
             .MapGet(GetCredentials)
-            .MapGet(GetCredential, "id")
+            .MapGet(GetCredential, "{id}")
             .MapPost(CreateCredential)
-            .MapPut(UpdateCredential, "id")
-            .MapDelete(DeleteCredential, "id");
+            .MapPut(UpdateCredential, "{id}")
+            .MapDelete(DeleteCredential, "{id}")
+            .MapDelete(DeleteCredentials);
     }
     
     public async Task<IList<ZqAuth.Credential>> GetCredentials(IApplicationDbContext context)
@@ -21,9 +22,9 @@ public class Credential : EndpointGroupBase
         return await context.Credentials.ToListAsync();
     }
 
-    public async Task<ZqAuth.Credential> GetCredential(IApplicationDbContext context, CancellationToken cancellationToken, Guid sid)
+    public async Task<ZqAuth.Credential> GetCredential(IApplicationDbContext context, CancellationToken cancellationToken, Guid id)
     {
-        return await context.Credentials.FirstOrDefaultAsync(c => c.id == sid) ?? new ZqAuth.Credential();
+        return await context.Credentials.FirstOrDefaultAsync(c => c.id == id) ?? new ZqAuth.Credential();
     }
 
     public record struct NewCredentialRequest(string UserId, string Password, string Domain);
@@ -59,6 +60,15 @@ public class Credential : EndpointGroupBase
         context.Credentials.Remove(entity);
         await context.SaveChangesAsync(cancellationToken);
         
+        return Results.NoContent();
+    }
+
+    public async Task<IResult> DeleteCredentials(IApplicationDbContext context, CancellationToken cancellationToken)
+    {
+        var allRecords = context.Credentials.ToList();
+        context.Credentials.RemoveRange(allRecords);
+        await context.SaveChangesAsync(cancellationToken);
+
         return Results.NoContent();
     }
 }
