@@ -10,6 +10,7 @@ public class Credential : EndpointGroupBase
     {
         app.MapGroup(this)
             .MapGet(GetCredentials)
+            .MapGet(GetCredential, "id")
             .MapPost(CreateCredential)
             .MapPut(UpdateCredential, "id")
             .MapDelete(DeleteCredential, "id");
@@ -19,12 +20,18 @@ public class Credential : EndpointGroupBase
     {
         return await context.Credentials.ToListAsync();
     }
-    
+
+    public async Task<ZqAuth.Credential> GetCredential(IApplicationDbContext context, CancellationToken cancellationToken, Guid sid)
+    {
+        return await context.Credentials.FirstOrDefaultAsync(c => c.id == sid) ?? new ZqAuth.Credential();
+    }
+
     public record struct NewCredentialRequest(string UserId, string Password, string Domain);
     public async Task<Guid> CreateCredential(IApplicationDbContext context, CancellationToken cancellationToken, NewCredentialRequest credentialRequest)
     {
         var credential = new ZqAuth.Credential(credentialRequest.UserId, credentialRequest.Password, credentialRequest.Domain);
-        context.Credentials.Add(credential);
+        if(!context.Credentials.Any(c => c.Domain == credential.Domain && c.UserId == credential.UserId))
+            context.Credentials.Add(credential);
         await context.SaveChangesAsync(cancellationToken);
         return credential.id;
     }

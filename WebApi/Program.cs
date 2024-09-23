@@ -1,3 +1,4 @@
+using System.Net;
 using System.Reflection;
 using Infrastructure.Data;
 using WebApi.Base;
@@ -12,6 +13,12 @@ builder.Services.AddInfrastructureServices(builder.Configuration);
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.WebHost.ConfigureKestrel((context, serverOptions) =>
+{
+    serverOptions.ListenLocalhost(5003);
+    // serverOptions.ListenLocalhost(5004, options => options.UseHttps());
+});
 
 var app = builder.Build();
 
